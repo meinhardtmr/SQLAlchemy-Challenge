@@ -44,8 +44,8 @@ def home():
         f'/api/v1.0/precipitation<br/>'
         f'/api/v1.0/stations<br/>'
         f'/api/v1.0/tobs<br/>'
-        f'/api/v1.0/start%20date<br/>'
-        f'/api/v1.0/start%20date/end%20date<br/>'
+        f'/api/v1.0/startdate<br/>'
+        f'/api/v1.0/startdate/enddate<br/>'
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -99,34 +99,31 @@ def tobs():
     
     return jsonify(dict(tobs))
     
-@app.route("/api/v1.0/start date")
-def start():
-    start_date = request.args.get('start_date')
-    
+@app.route("/api/v1.0/startdate/<startdate>")
+def start(startdate):
+       
     rec = session.query(func.min(Measurement.tobs) \
                        ,func.avg(Measurement.tobs)\
                        ,func.max(Measurement.tobs)) \
-                 .filter(Measurement.date >= start_date) \
+                 .filter(Measurement.date >= startdate) \
                  .one() 
 
     session.close()
-    results = {'startDate':start_date, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
+    results = {'startDate':startdate, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
     return jsonify(results)
 
-@app.route("/api/v1.0/start date/end date")
-def start_end():
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
+@app.route("/api/v1.0/startdate/enddate/<startdate>/<enddate>")
+def start_end(startdate, enddate):
     
     rec = session.query(func.min(Measurement.tobs) \
                        ,func.avg(Measurement.tobs) \
                        ,func.max(Measurement.tobs)) \
-              .filter(Measurement.date >= start_date
-                     ,Measurement.date <= end_date) \
+              .filter(Measurement.date >= startdate
+                     ,Measurement.date <= enddate) \
               .one() 
 
     session.close()
-    results = {'startDate':start_date,'endDate':end_date, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
+    results = {'startDate':startdate,'endDate':enddate, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
     return jsonify(results)
 
 if __name__ == "__main__":
