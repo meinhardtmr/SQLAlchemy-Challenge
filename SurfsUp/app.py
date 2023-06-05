@@ -44,8 +44,8 @@ def home():
         f'/api/v1.0/precipitation<br/>'
         f'/api/v1.0/stations<br/>'
         f'/api/v1.0/tobs<br/>'
-        f'/api/v1.0/startdate<br/>'
-        f'/api/v1.0/startdate/enddate<br/>'
+        f'/api/v1.0/start<br/>'
+        f'/api/v1.0/start/end<br/>'
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -99,31 +99,31 @@ def tobs():
     
     return jsonify(dict(tobs))
     
-@app.route("/api/v1.0/startdate/<startdate>")
-def start(startdate):
+@app.route("/api/v1.0/start/<start>")
+def start(start):
        
     rec = session.query(func.min(Measurement.tobs) \
                        ,func.avg(Measurement.tobs)\
                        ,func.max(Measurement.tobs)) \
-                 .filter(Measurement.date >= startdate) \
+                 .filter(Measurement.date >= start) \
                  .one() 
 
     session.close()
-    results = {'startDate':startdate, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
+    results = {'startDate':start, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
     return jsonify(results)
 
-@app.route("/api/v1.0/startdate/enddate/<startdate>/<enddate>")
-def start_end(startdate, enddate):
+@app.route("/api/v1.0/start/end/<start>/<end>")
+def start_end(start, end):
     
     rec = session.query(func.min(Measurement.tobs) \
                        ,func.avg(Measurement.tobs) \
                        ,func.max(Measurement.tobs)) \
-              .filter(Measurement.date >= startdate
-                     ,Measurement.date <= enddate) \
+              .filter(Measurement.date >= start
+                     ,Measurement.date <= end) \
               .one() 
 
     session.close()
-    results = {'startDate':startdate,'endDate':enddate, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
+    results = {'startDate':start,'endDate':end, 'min': str(rec[0]), 'avg': str(rec[1]), 'max': str(rec[2])}
     return jsonify(results)
 
 if __name__ == "__main__":
